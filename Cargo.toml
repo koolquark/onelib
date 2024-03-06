@@ -1,0 +1,13 @@
+[package]
+name = "onelib"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+reqwest = { version = "0.11.24", features = ["json", "rustls-tls"]}
+base64 = "0.22.0"
+serde_yaml = "0.9.32"
+serde = {version = "1.0.197", features = ["serde_derive"]}
+
+[dev-dependencies]
+tokio = { version = "1.36.0", features = ["full"] }

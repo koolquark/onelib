@@ -1,0 +1,35 @@
+
+use std::collections::HashMap;
+
+use onelib::{utils::load_config, verify_certs};
+use reqwest::Certificate;
+use serde::Deserialize;
+
+
+#[derive(Debug, Deserialize)]
+struct NamedCertString(String, String);
+
+#[derive(Debug)]
+struct NamedCert(String, Certificate);
+
+#[derive(Debug, Deserialize)]
+struct Config {
+    pub pem_cacerts: Vec<Named>, 
+    #[serde(skip)]
+    pub cacerts: Vec<NamedCert>
+}
+
+#[tokio::main]
+async fn main() {
+    let config = load_config::<Config>("CONFIG_PATH");
+    
+    async {
+        verify_certs(&config.pem_cacerts);
+    }.await; 
+
+    async {
+        verify_certs(&config.pem_cacerts);
+    }.await; 
+
+
+}
