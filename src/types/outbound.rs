@@ -1,7 +1,7 @@
 use serde::Deserialize;
 use std::time::Duration;
 use base64::prelude::*;
-use reqwest::{header::{HeaderMap, AUTHORIZATION}, Certificate, Client,Identity};
+use reqwest::{header::{HeaderMap, AUTHORIZATION}, Certificate, Client,Identity, Proxy};
 
 use super::basic_auth::BasicAuth;
 
@@ -31,6 +31,9 @@ pub struct SmscOutboundEndpoint {
     pub useragent: String,
     pub accept_invalid_certs: bool,
     pub auth: Option<BasicAuth>,
+    pub http_proxy: Option<String>,
+    pub https_proxy: Option<String>,
+
 }
 
 impl SmscOutboundEndpoint { 
@@ -78,6 +81,31 @@ impl SmscOutboundEndpoint {
             );
         }
 
+        match ( self.url.starts_with("https"), self.https_proxy.is_some(), self.http_proxy.is_some()) {
+            (true,true,_) =>  { 
+                 match Proxy::https(self.https_proxy.as_ref().unwrap()) {
+                    Ok(p) => {
+                        builder = builder.proxy(p);
+                    }
+                    Err(e) => {
+                        println!("invalid proxy settings for https_proxy: {}", e);
+                    }
+                }
+            }, 
+            (false,_,true) =>  { 
+                match Proxy::https(self.http_proxy.as_ref().unwrap()) {
+                    Ok(p) => {
+                        builder = builder.proxy(p);
+                    }
+                    Err(e) => {
+                        println!("invalid proxy settings for http_proxy: {}", e);
+                    }
+                }
+            }, 
+            (_,_,_) => { }
+       }
+
+
         builder = builder.default_headers(headers);
 
         builder.build().unwrap()
@@ -101,6 +129,8 @@ pub struct OutboundEndpoint {
     #[serde(default = "default_useragent")]
     pub useragent: String,
     pub accept_invalid_certs: bool,
+    pub http_proxy: Option<String>,
+    pub https_proxy: Option<String>,
 }
 
 fn default_useragent() -> String {
@@ -151,6 +181,31 @@ impl OutboundEndpoint {
                     basic_auth.password)
             );
         }
+
+        
+        match ( self.url.starts_with("https"), self.https_proxy.is_some(), self.http_proxy.is_some()) {
+            (true,true,_) =>  { 
+                 match Proxy::https(self.https_proxy.as_ref().unwrap()) {
+                    Ok(p) => {
+                        builder = builder.proxy(p);
+                    }
+                    Err(e) => {
+                        println!("invalid proxy settings for https_proxy: {}", e);
+                    }
+                }
+            }, 
+            (false,_,true) =>  { 
+                match Proxy::https(self.http_proxy.as_ref().unwrap()) {
+                    Ok(p) => {
+                        builder = builder.proxy(p);
+                    }
+                    Err(e) => {
+                        println!("invalid proxy settings for http_proxy: {}", e);
+                    }
+                }
+            }, 
+            (_,_,_) => { }
+       }
 
         builder = builder.default_headers(headers);
 
