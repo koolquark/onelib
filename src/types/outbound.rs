@@ -206,7 +206,7 @@ impl OutboundEndpoint {
             }, 
             (_,_,_) => {
 
-                builder = builder.no_proxy(p);
+                builder = builder.no_proxy();
              }
        }
 
