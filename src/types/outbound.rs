@@ -204,7 +204,10 @@ impl OutboundEndpoint {
                     }
                 }
             }, 
-            (_,_,_) => { }
+            (_,_,_) => {
+
+                builder = builder.no_proxy(p);
+             }
        }
 
         builder = builder.default_headers(headers);
