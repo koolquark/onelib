@@ -23,11 +23,11 @@ impl ReporterWithResponse {
         .json(hm)
         .send().await {
             Ok(v) => {
-                println!("REPORTED {} : {} ", v.status(), msg);
+                println!("REPORTED TO : {} : {} : {} ", uri, v.status(), msg);
                 Ok(v)
             },
             Err(e) => {
-                println!("ERROR {} : {}",msg, e.to_string());
+                println!("ERROR : {} :  {} : {}",uri, msg, e.to_string());
                 Err(e)
             }
         }
