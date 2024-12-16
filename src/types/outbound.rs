@@ -116,9 +116,6 @@ impl SmscOutboundEndpoint {
 
 
 
-
-
-
 #[derive(Debug, Deserialize)]
 pub struct OutboundEndpoint {
     pub url: String, 
@@ -182,7 +179,6 @@ impl OutboundEndpoint {
             );
         }
 
-        
         match ( self.url.starts_with("https"), self.https_proxy.is_some(), self.http_proxy.is_some()) {
             (true,true,_) =>  { 
                  match Proxy::https(self.https_proxy.as_ref().unwrap()) {
@@ -204,6 +200,7 @@ impl OutboundEndpoint {
                     }
                 }
             }, 
+
             (_,_,_) => {
 
                 builder = builder.no_proxy();
