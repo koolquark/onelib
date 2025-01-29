@@ -42,13 +42,13 @@ impl ReporterWithResponse {
     pub async fn report_msg_ext<T>(
         self,
         uri: &str,
-        hm: &HashMap<String, T>,
+        body: &T,
         msg: &str,
     ) -> Result<Response, reqwest::Error>
     where
-        T: Serialize + std::fmt::Debug,
+        T: Serialize + std::fmt::Debug + Clone,
     {
-        match self.client.post(uri).json(hm).send().await {
+        match self.client.post(uri).json(body).send().await {
             Ok(v) => {
                 println!("REPORTED TO : {} : {} : {} ", uri, v.status(), msg);
                 Ok(v)
