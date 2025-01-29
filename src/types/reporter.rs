@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use reqwest::{Client, Response};
+use serde::Serialize;
 
 #[allow(dead_code)]
 #[derive(Debug, Clone)]
@@ -25,6 +26,28 @@ impl ReporterWithResponse {
         hm: &HashMap<String, Option<String>>,
         msg: &str,
     ) -> Result<Response, reqwest::Error> {
+        match self.client.post(uri).json(hm).send().await {
+            Ok(v) => {
+                println!("REPORTED TO : {} : {} : {} ", uri, v.status(), msg);
+                Ok(v)
+            }
+            Err(e) => {
+                println!("ERROR : {} :  {} : {}", uri, msg, e.to_string());
+                Err(e)
+            }
+        }
+    }
+
+    #[allow(dead_code)]
+    pub async fn report_msg_ext<T>(
+        self,
+        uri: &str,
+        hm: &HashMap<String, T>,
+        msg: &str,
+    ) -> Result<Response, reqwest::Error>
+    where
+        T: Serialize + std::fmt::Debug,
+    {
         match self.client.post(uri).json(hm).send().await {
             Ok(v) => {
                 println!("REPORTED TO : {} : {} : {} ", uri, v.status(), msg);
